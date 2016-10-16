@@ -5,8 +5,26 @@ $(function(){
 	var resultsText = document.querySelector('#results');
 
 	function compareImages(imageUrl){
-		console.log(imageUrl);	
+		console.log(imageUrl);
+		var xhr = new XMLHttpRequest();
+		console.log(xhr);
+		xhr.onload = function(e){
+			console.log('amin');
+			resemble(e.target.responseURL).compareTo(file).onComplete(function(data){
+				if (data.misMatchPercentage < 20){
+					console.log('amin');
+					resultsText.querySelector('h3').insertAdjacentHTML('afterend', '<img class="match" src="' + e.target.responseURL + '" alt="photo">');
+				} else {
+					console.log('amin');
+					resultsText.querySelector('h3').insertAdjacentHTML('afterend', '<img src="' + e.target.responseURL + '" alt="photo">');
+				}
+			});
+		}; // onload
+		xhr.open('get', imageUrl);
+		xhr.responseType = 'blob';
+		xhr.send();
 	}
+
 
 	function getImages(url){
 		console.log('amin');
@@ -25,19 +43,23 @@ $(function(){
 					// console.log(image);
 					if ((image !== undefined) && (image.lastIndexOf('.jpg') > 0 )){
 						list.push(image);
+						console.log(list);
 					}
 				}
 			}
-		};
 
-		resultsText.innerHTML = '<h3>Searching images ... </h3>';
-		for (var item in list){
-			if (list.hasOwnProperty(item)){
-				console.log(list[item]);
-				compareImages(list[item]);
+			resultsText.innerHTML = '<h3>Searching images ... </h3>';
+			for (var item in list){
+				console.log('1');
+				if (list.hasOwnProperty(item)){
+					console.log('2');
+					console.log(list[item]);
+					console.log('compare thing');
+					compareImages(list[item]);
+				}
 			}
-		}
-
+		};
+		
 		request.open('get', url);
 		console.log(request);
 		request.responseType = 'document';
@@ -83,7 +105,6 @@ $(function(){
 				// console.log(fileReader);
 				// return false;
 			}); // on drop
-
 	}
 	dropZone(target);
 
@@ -96,7 +117,5 @@ $(function(){
 		} else {
 			resultsText.innerHTML = '<p class="alert alert-danger">Sorry drop image here';
 		}
-
-
 	});
 });

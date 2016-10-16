@@ -1,5 +1,8 @@
 $(function(){
 	'use strict';
+	var fromDate;
+	var toDate;
+
 	function getMean(myArray){
 		var mean = myArray.reduce(function(a,b){
 			return a + b;
@@ -93,8 +96,8 @@ $(function(){
 			jsonpCallback: 'jsonReturnData',
 			dataType: 'jsonp',
 			data: {
-				startDate: '20150305',
-				endDate: '20150326',
+				startDate: formatDate(fromDate, ''),
+				endDate: formatDate(toDate, ''),
 				format: 'json'
 			},
 			success: function(response){
@@ -102,5 +105,45 @@ $(function(){
 			} // succss
 		}); // AJAX call
 	} // load Chart
+
+	function formatDate(date, divider){
+		var someday = new Date(date);
+		var month = someday.getUTCMonth() + 1;
+		var day = someday.getUTCDay();
+		var year = someday.getUTCFullYear();
+
+		if (month <= 9) { month = '0' + month};
+		if (day <= 9) { day = '0' + day};
+
+		return ('' + year + divider + month + divider + day);
+	}
+
+	fromDate = new Date();
+	console.log(fromDate);
+	fromDate.setDate(fromDate.getDate() - 100);
+	console.log(fromDate);
+
+	toDate = new Date();
+	toDate.setDate(toDate.getDate() - 1);
+
+	document.forms.rangeform.from.value = formatDate(fromDate, '-');
+	document.forms.rangeform.to.value = formatDate(toDate, '-');
+
+
 	loadChart();
+
+	// Events =====\
+
+	document.forms.rangeform.addEventListener('change', function(e){
+		fromDate = new Date(document.rangeform.from.value);
+		toDate = new Date(document.rangeform.to.value);
+
+		fromDate = fromDate.toUTCString();
+		toDate = toDate.toUTCString();
+
+	loadChart();
+
+	}, false);
+
+
 });
